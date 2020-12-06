@@ -87,6 +87,8 @@ count5=0
 count6=0
 typesofparticles = {}
 leptonhistograms = {}
+listoflists = []
+groupdict = {}
 # loop over events
 def leptoninfo(particle,number,numberofdaughters):
 	if not leptonhistograms.has_key("histograms_lepton_"+str(number)):
@@ -94,20 +96,28 @@ def leptoninfo(particle,number,numberofdaughters):
 		globals()["h_lepton_Eta_"+str(number)] = ROOT.TH1F ("lep_Eta", "Lepton" + str(number) + " Eta;Eta;entries", 10,-4,4)
 		globals()["h_lepton_Phi_"+str(number)] = ROOT.TH1F ("lep_Phi", "Lepton" + str(number) + " Phi;Phi;entries", 10,-4,4)
 		globals()["h_lepton_pdg_"+str(number)] = ROOT.TH1F ("lep_pdg", "Lepton" + str(number) + " pdg;pdg;entries", 41,-20,20)
-
-
+		groupdict[number] = []
+		globals()["h_lepton_Pt_list_"+str(number)] = []
+		globals()["h_lepton_Eta_list_"+str(number)] = []
+		globals()["h_lepton_Phi_list_"+str(number)] = []
+		globals()["h_lepton_pdg_list_"+str(number)] = []
+		listoflists.append([globals()["h_lepton_Pt_list_"+str(number)],globals()["h_lepton_Eta_list_"+str(number)],globals()["h_lepton_Phi_list_"+str(number)],globals()["h_lepton_pdg_list_"+str(number)]])	
+		histogramlist = [globals()["h_lepton_Pt_"+str(number)], globals()["h_lepton_Eta_"+str(number)], globals()["h_lepton_Phi_"+str(number)], globals()["h_lepton_pdg_"+str(number)]]		
+		leptonhistograms["histograms_lepton_"+str(number)] = histogramlist
+		groupdict[number]=[]
+	temptuple = []
 	lorentzparticle = particle.p4();
-	globals()["h_lepton_Pt_"+str(number)].Fill(lorentzparticle.Pt())
+	'''globals()["h_lepton_Pt_list_"+str(number)].append(lorentzparticle.Pt())
 
-	globals()["h_lepton_Eta_"+str(number)].Fill(lorentzparticle.eta())
+	globals()["h_lepton_Eta_list_"+str(number)].append(lorentzparticle.eta())
 
-	globals()["h_lepton_Phi_"+str(number)].Fill(lorentzparticle.phi())
+	globals()["h_lepton_Phi_list_"+str(number)].append(lorentzparticle.phi())
 
-	globals()["h_lepton_pdg_"+str(number)].Fill(abs(particle.pdgId()))
+	globals()["h_lepton_pdg_list_"+str(number)].append(particle.pdgId())'''
+	
+	temptuple = [lorentzparticle.Pt(),lorentzparticle.eta(),lorentzparticle.phi(),particle.pdgId(),lorentzparticle]
+	groupdict[number].append(temptuple)
 
-
-	histogramlist = [globals()["h_lepton_Pt_"+str(number)], globals()["h_lepton_Eta_"+str(number)], globals()["h_lepton_Phi_"+str(number)], globals()["h_lepton_pdg_"+str(number)]]		
-	leptonhistograms["histograms_lepton_"+str(number)] = histogramlist
 	
 		
 def neutralino1info(particle):
@@ -269,6 +279,83 @@ outfile.Write()
 """
 print("Number of entries in LeptonHistograms:",len(leptonhistograms))
 print("number of histograms in value:", len(leptonhistograms["histograms_lepton_1"]))
+# sort lepton histograms by leading and nonleading, create reconstructed Z-boson plots
+'''for x in enumerate(listoflists[0][0]):
+    tempdict = {}
+    templist = []
+    for y in range(0,len(listoflists)):
+	templist=[]
+	for yy in range(0,len(listoflists[0])
+	    templist.append(listoflists[y][yy][x])
+	    tempdict[yy]=templist
+    templist = templist.sort()
+    for z in range(0, len(listoflists)):
+	for zz in range(0,len(listoflists[0])
+	listoflists[z][zz][x] = templist[z]
+'''
+zlist = []
+for x in range(0,len(groupdict[1])):
+    tempdict = {} 
+    for key,value in groupdict.items():
+	tempdict[value[x][0]] = value[x]
+    sortedPt = sorted(tempdict,reverse=True)
+    sortedTuples = []
+    for num in range(0,len(tempdict)):
+	sortedTuples.append(tempdict[sortedPt[num]])
+    zefftup = []
+    for num2 in range(0,len(sortedTuples)):
+        whichhist = 0
+	for a in range(0,5):
+	    
+	    if a==0:
+                histtype = "Pt"
+            if a==1:
+                histtype = "Eta"
+            if a==2:
+                histtype = "Phi"
+	    if a==3:
+                histtype = "pdg"
+	    if a==4:
+		zefftup.append(sortedTuples[num2][4])
+		continue
+            globals()["h_lepton_"+histtype+"_"+str(num2+1)].Fill(sortedTuples[num2][a])
+    zlist.append(zefftup)
+
+
+
+
+for number in range(1,len(leptonhistograms)+1):
+    histogramlist = [globals()["h_lepton_Pt_"+str(number)], globals()["h_lepton_Eta_"+str(number)], globals()["h_lepton_Phi_"+str(number)], globals()["h_lepton_pdg_"+str(number)]]		
+    leptonhistograms["histograms_lepton_"+str(number)] = histogramlist
+
+
+
+# find relevant z info
+for x in range(0,len(zlist)):
+    for y in range(0,len(zlist[x])):
+	if y ==0:
+	    vectorsum = zlist[x][y]
+	    continue
+	vectorsum = vectorsum + zlist[x][y]
+    h_zmass.Fill(vectorsum.M())
+    h_zpt.Fill(vectorsum.Pt())
+
+
+
+
+h_zmass.Draw()
+outfile.Write()
+c1.Print (outputdir+"Reconstructed Z Mass"+".png")
+
+h_zpt.Draw()
+outfile.Write()
+c1.Print (outputdir+"Reconstructed Z pT"+".png")
+
+
+
+
+
+
 for key in leptonhistograms:
     histcount=0
     for x in leptonhistograms[key]:

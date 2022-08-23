@@ -1,0 +1,1 @@
+macroRun -m configs/macros/MergeAndCollectStacks.json -i plots_SR_fourteenthrun_2018_EWKino_bkgs_all.root -i plots_SR_fourteenthrun_2018_200_190_180_nobkg.root -o plots_SR_fourteenthrun_2018_200_190_180_bkgs_all.root

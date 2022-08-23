@@ -1,0 +1,12 @@
+[
+    {
+        "quantity": "matched_muon_Mmumu",
+        "groups_to_exclude": [],
+        "type": "float1D",
+        "name": "matched_muon_Mmumu",
+        "title": "Di-muon invariant mass M_{#mu#mu} [GeV]",
+        "nbinsX": 70,
+        "lowX": 0,
+        "highX": 35
+    }
+]

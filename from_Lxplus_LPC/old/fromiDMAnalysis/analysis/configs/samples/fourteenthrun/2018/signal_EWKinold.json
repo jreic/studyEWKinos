@@ -1,0 +1,62 @@
+{
+    "EWKino_M-200_190_180_ctau-1": {
+        "ctau_cm": 0.1,
+        "delta_fraction": 0.1,
+        "dir": [
+            "/uscms/home/joeyr/nobackup/EWKino/iDM-code/CMSSW_10_2_18/src/iDMAnalysis/analysis/200_190_180_1mm_numEvent100000.root"
+        ],
+        "group": "sig_EWKino_1mm",
+        "limit_num_files": -1,
+        "lumi": 59.74,
+        "m1": 180.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 49426.0,
+        "xsec": 0.48,
+        "year": 2018
+    },
+    "EWKino_M-200_190_180_ctau-10": {
+        "ctau_cm": 1,
+        "delta_fraction": 0.1,
+        "dir": [
+            "/uscms/home/joeyr/nobackup/EWKino/iDM-code/CMSSW_10_2_18/src/iDMAnalysis/analysis/200_190_180_10mm_numEvent100000.root"
+        ],
+        "group": "sig_EWKino_10mm",
+        "limit_num_files": -1,
+        "lumi": 59.74,
+        "m1": 180.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 49426.0,
+        "xsec": 0.48,
+        "year": 2018
+    },
+    "EWKino_M-200_190_180_ctau-100": {
+        "ctau_cm": 10,
+        "delta_fraction": 0.1,
+        "dir": [
+            "/uscms/home/joeyr/nobackup/EWKino/iDM-code/CMSSW_10_2_18/src/iDMAnalysis/analysis/200_190_180_100mm_numEvent100000.root"
+        ],
+        "group": "sig_EWKino_100mm",
+        "limit_num_files": -1,
+        "lumi": 59.74,
+        "m1": 180.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 49426.0,
+        "xsec": 0.48,
+        "year": 2018
+    },
+    "EWKino_M-200_190_180_ctau-1000": {
+        "ctau_cm": 100,
+        "delta_fraction": 0.1,
+        "dir": [
+            "/uscms/home/joeyr/nobackup/EWKino/iDM-code/CMSSW_10_2_18/src/iDMAnalysis/analysis/200_190_180_1000mm_numEvent100000.root"
+        ],
+        "group": "sig_EWKino_1000mm",
+        "limit_num_files": -1,
+        "lumi": 59.74,
+        "m1": 180.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 49426.0,
+        "xsec": 0.48,
+        "year": 2018
+    }
+}

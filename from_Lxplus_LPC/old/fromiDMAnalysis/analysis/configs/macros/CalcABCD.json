@@ -1,0 +1,11 @@
+[
+    {
+        "name": "mCalcABCD",
+        "config": {
+            "lowX": 0.0,
+            "highX": 0.2,
+            "lowY": 0,
+            "highY": 8
+        }
+    }
+]

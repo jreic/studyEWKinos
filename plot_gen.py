@@ -5,6 +5,10 @@ import ROOT
 import sys,os
 import math
 from DataFormats.FWLite import Events, Handle
+from ROOT import TText
+from ROOT import TPaveText
+from ROOT import TGraph
+from array import array
 
 inputFile = sys.argv[1]
 outputdir = sys.argv[2]+"/"
@@ -36,10 +40,11 @@ h_N2_Pt = ROOT.TH1F ("N2_Pt", "Neutralino 2 pT;pT [GeV];entries", 50, 0, 300)
 h_N2_Eta = ROOT.TH1F ("N2_Eta", "Neutralino 2 Pseudorapidity;entries",10,-4,4)
 h_N2_Phi = ROOT.TH1F ("N2_Phi", "Neutralino 2 Phi;entries",10,-4,4)
 h_N2_status = ROOT.TH1F ("N2_Status", "Neutralino 2 Status;entries", 100,0,100)
-h_N2_lifetime_labframe = ROOT.TH1F ("N2_Lifetime_LabFrame", "Neutralino 2 Lifetime in Lab Frame; Time [ps];entries", 100,0,1.0)
-h_N2_lifetime_restframe = ROOT.TH1F ("N2_Lifetime_RestFrame", "Neutralino 2 Lifetime in Rest Frame; Time [ps];entries", 100,0,1.0)
-h_N2_ctau_labframe = ROOT.TH1F ("N2_cTau_Labframe", "Neutralino 2 cTau in  Lab Frame; Displacement [mm];entries",100,0,2)
-h_N2_ctau_restframe = ROOT.TH1F ("N2_cTau_Restframe", "Neutralino 2 cTau in  Rest Frame; Displacement [mm];entries",100,0,2)
+h_N2_lifetime_labframe = ROOT.TH1F ("N2_Lifetime_LabFrame", "Neutralino 2 Lifetime in Lab Frame; Time [ps];entries", 100,0,maxHist*10*3)
+h_N2_lifetime_restframe = ROOT.TH1F ("N2_Lifetime_RestFrame", "Neutralino 2 Lifetime in Rest Frame; Time [ps];entries", 100,0,maxHist*10*3)
+h_N2_ctau_labframe = ROOT.TH1F ("N2_cTau_Labframe", "Neutralino 2 cTau in  Lab Frame; Displacement [mm];entries",100,0,maxHist*20)
+h_N2_ctau_restframe = ROOT.TH1F ("N2_cTau_Restframe", "Neutralino 2 cTau in Rest Frame; Displacement [mm];entries",100,0,maxHist*20)
+h_N2_speed = ROOT.TH1F ("N2_Speed", "Neutralino 2 Speed; Speed [c];entries", 120, 0, 1.2)
 
 h_N1_mass = ROOT.TH1F ("N1_Mass", "Neutralino 1;mass [GeV];entries", 50, 20, 220)
 h_N1_Pt = ROOT.TH1F ("N1_Pt", "Neutralino 1 pT;pT [GeV];entries", 50, 0, 300)
@@ -62,6 +67,12 @@ h_lep0disp3D = ROOT.TH1F("lep0disp3D", "Leading Lepton 3D Displacement; Displace
 h_lep1disp3D = ROOT.TH1F("lep1disp3D", "Subleading Lepton 3D Displacement; Displacement [cm];entries", 100,0,maxHist)
 h_zdisp2D = ROOT.TH1F("zdisp2D", "Z boson 2D Displacement; Displacement [cm];entries", 100,0,maxHist)
 h_zdisp3D = ROOT.TH1F("zdisp3D", "Z boson 3D Displacement; Displacement [cm];entries", 100,0,maxHist)
+"""
+h_diff_decay_rate1 = ROOT.TH1F("Differential_Decay_Rate1", "Differnetial Decay Rate; Rate;entries",100,0,150000)
+h_diff_decay_rate2 = ROOT.TH1F("Differential_Decay_Rate2", "Differnetial Decay Rate; Rate;entries",100,0,150000)
+"""
+
+
 # add more histograms here for other kinematics!
 # most of the interesting quantities for a single particle come from
 # https://github.com/cms-sw/cmssw/blob/master/DataFormats/Candidate/interface/LeafCandidate.h#L105
@@ -74,7 +85,9 @@ origin = (0.,0.,0.)
 N2_massglobal = 0.
 N2_Pglobal = 0.
 c = 299792458
-
+mN2 = 0.
+mN1 = 0.
+Z = 91.188
 # loop over events
 def findLifetimes(vertex,momentum,mass):
     ps = 10**12
@@ -88,7 +101,23 @@ def findLifetimes(vertex,momentum,mass):
     d = y*b
     t = t*ps
     tprime = d*(ps)
-    return (t,tprime)
+    return (t,tprime,Beta)
+
+def theory_diff_decay_rate(mll,mN2,mN1,signed_product):
+	m = mll
+	mN2 = round(mN2)
+	mN1 = round(mN1)
+	if signed_product==1:
+	    mu = mN2-mN1
+	    M = mN2+mN1
+	if signed_product==-1:
+	    mu = mN2+mN1
+	    M = mN2-mN1
+
+	rate =  (m*math.sqrt(m**4-(m**2)*(mu**2+M**2)+(mu*M)**2)/(m**2-Z**2)**2)*(-2*m**4+(m**2)*(2*M**2-mu**2)+(mu*M)**2)
+	print(rate)
+	return rate
+
 
 def neutralino1info(particle):
 	lorentzParticle = particle.p4() 
@@ -100,12 +129,14 @@ def neutralino1info(particle):
 	disp3 = math.sqrt((particle.vx()-origin[0])**2+(particle.vy()-origin[1])**2+(particle.vz()-origin[2])**2)
 	h_N1_disp2D.Fill(disp2)
 	h_N1_disp3D.Fill(disp3)
-	times = findLifetimes(disp3,N2_Pglobal,N2_massglobal)
-	h_N2_lifetime_labframe.Fill(times[0])
-	h_N2_lifetime_restframe.Fill(times[1])
-	h_N2_ctau_labframe.Fill(times[0]*c*1000/(10**12))
-	h_N2_ctau_restframe.Fill(times[1]*c*1000/(10**12))
-
+	times_speed = findLifetimes(disp3,N2_Pglobal,N2_massglobal)
+	h_N2_lifetime_labframe.Fill(times_speed[0])
+	h_N2_lifetime_restframe.Fill(times_speed[1])
+	h_N2_ctau_labframe.Fill(times_speed[0]*c*1000/(10**12))
+	h_N2_ctau_restframe.Fill(times_speed[1]*c*1000/(10**12))
+	h_N2_speed.Fill(times_speed[2])
+	global mN1
+	mN1 = N1_mass
 def neutralino2info(particle):
 	lorentzParticle = particle.p4() 
 	N2_status = particle.status(); N2_mass = lorentzParticle.M(); N2_Pt = lorentzParticle.Pt(); N2_P = lorentzParticle.P();
@@ -116,7 +147,8 @@ def neutralino2info(particle):
 	N2_massglobal = N2_mass 
 	global N2_Pglobal
 	N2_Pglobal = N2_P
-
+	global mN2
+	mN2 = N2_mass
 def charginoinfo(particle):
 	lorentzParticle = particle.p4() 
 	C1_status = particle.status(); C1_mass = lorentzParticle.M(); C1_Pt = lorentzParticle.Pt();
@@ -130,7 +162,8 @@ for num,event in enumerate(events):
     event.getByLabel (label, handle)
     if nevents_processed % 10 == 0:
         print "Processing event #%s" % (nevents_processed)
-    
+    if nevents_processed >= maxEvents:
+	break
     # get the product: these are the particles that we'll access!
     genParticles = handle.product()
 
@@ -207,7 +240,41 @@ for num,event in enumerate(events):
     nevents_processed += 1
     origin =  (0.,0.,0.,)
 
+
+#find diff_decay_rate theoretical curve as a function of lepton pair mass
+n = 21 #change for different mass splittings
+lepMasses = array( 'd' ); ratesp = array( 'd' ); ratesn = array( 'd' )
+print(mN1)
+print(mN2)
+for mll in range(0,round(mN2-mN1+1)):
+     theory = theory_diff_decay_rate(mll, mN2, mN1, 1)
+     theory2 = theory_diff_decay_rate(mll, mN2, mN1, -1)
+     print(mll)
+     lepMasses.append(mll)
+     ratesp.append(theory)
+     ratesn.append(theory2)
+print(lepMasses)
+print(ratesp)
+print(ratesn)
+
+diff_ratesp = TGraph(n,lepMasses,ratesp)
+diff_ratesp.SetTitle("Differential Decay Rate for Positive Mass Eigenvalues")
+diff_ratesp.GetXaxis().SetTitle("Lepton Pair Invariant Mass [GeV]")
+diff_ratesp.GetYaxis().SetTitle("Arbitrary Units")
+
+diff_ratesn = TGraph(n,lepMasses,ratesn)
+diff_ratesn.SetTitle("Differential Decay Rate for Negative Mass Eigenvalues")
+diff_ratesn.GetXaxis().SetTitle("Lepton Pair Invariant Mass [GeV]")
+diff_ratesn.GetYaxis().SetTitle("Arbitrary Units")
+
 c1 = ROOT.TCanvas()
+diff_ratesp.Draw()
+c1.Print(outputdir+"Diff_Decay_Rate_Positive.png")
+c1.Clear()
+diff_ratesn.Draw()
+c1.Print(outputdir+"Diff_Decay_Rate_Negative.png")
+c1.Clear()
+
 h_N2_status.Draw()
 c1.Print (outputdir+"N2_status.png")
 h_N2_mass.Draw()
@@ -220,17 +287,43 @@ h_N2_Phi.Draw()
 c1.Print (outputdir+"N2_Phi.png")
 
 fit = h_N2_lifetime_labframe.Fit("expo","S")
+par = [fit.Get().Parameter(i) for i in range( 2 )]
+lifetimeoutput = "Mean Lifetime = " + str(1/-par[1]) + " ps"
+t = TPaveText ()
+t.SetTextFont(10)
+t.AddText(lifetimeoutput)
 h_N2_lifetime_labframe.Draw()
+t.Draw()
 c1.Print (outputdir+"N2_lifetime_labframe.png")
 fit = h_N2_lifetime_restframe.Fit("expo","S")
+par = [fit.Get().Parameter(i) for i in range( 2 )]
+lifetimeoutput = "Mean Lifetime = " + str(1/-par[1]) + " ps"
+t = TPaveText ()
+t.SetTextFont(10)
+t.AddText(lifetimeoutput)
 h_N2_lifetime_restframe.Draw()
+t.Draw()
 c1.Print (outputdir+"N2_lifetime_restframe.png")
 fit = h_N2_ctau_labframe.Fit("expo","S")
+par = [fit.Get().Parameter(i) for i in range( 2 )]
+lifetimeoutput = "Mean cTau = " + str(1/-par[1]) + " mm"
+t = TPaveText ()
+t.SetTextFont(10)
+t.AddText(lifetimeoutput)
 h_N2_ctau_labframe.Draw()
+t.Draw()
 c1.Print (outputdir+"N2_cTau_labframe.png")
 fit = h_N2_ctau_restframe.Fit("expo","S")
+par = [fit.Get().Parameter(i) for i in range( 2 )]
+lifetimeoutput = "Mean cTau = " + str(1/-par[1]) + " mm"
+t = TPaveText ()
+t.SetTextFont(10)
+t.AddText(lifetimeoutput)
 h_N2_ctau_restframe.Draw()
+t.Draw()
 c1.Print (outputdir+"N2_cTau_restframe.png")
+h_N2_speed.Draw()
+c1.Print (outputdir+"N2_Speed.png")
 
 h_N1_status.Draw()
 c1.Print (outputdir+"N1_status.png")
@@ -244,15 +337,21 @@ h_N1_Phi.Draw()
 c1.Print (outputdir+"N1_Phi.png")
 fit = h_N1_disp2D.Fit("expo","S")
 par = [fit.Get().Parameter(i) for i in range( 2 )]
-print(par)
-print("Lifetime = ", 1/-par[1])
+lifetimeoutput = "Mean Displacement = " + str((1/-par[1])*10) + " mm"
+t = TPaveText ()
+t.SetTextFont(10)
+t.AddText(lifetimeoutput)
 h_N1_disp2D.Draw()
+t.Draw()
 c1.Print (outputdir+"N1_2DVertex.png")
 fit=h_N1_disp3D.Fit("expo","S")
 par = [fit.Get().Parameter(i) for i in range( 2 )]
-print(par)
-print("Lifetime = ", 1/-par[1])
+lifetimeoutput = "Mean Displacement = " + str((1/-par[1])*10) + " mm"
+t = TPaveText ()
+t.SetTextFont(10)
+t.AddText(lifetimeoutput)
 h_N1_disp3D.Draw()
+t.Draw()
 c1.Print (outputdir+"N1_3DVertex.png")
 
 h_C1_status.Draw()
@@ -290,7 +389,13 @@ h_zdisp2D.Draw()
 c1.Print (outputdir+"h_zdisp2D.png")
 h_zdisp3D.Draw()
 c1.Print (outputdir+"h_zdisp3D.png")
+'''
+h_diff_decay_rate1.Draw()
+c1.Print (outputdir+"h_diff_decay_rate1.png")
 
+h_diff_decay_rate2.Draw()
+c1.Print (outputdir+"h_diff_decay_rate2.png")
+'''
 outfile.Write()
 h_zmass.Reset()
 h_zpt.Reset()

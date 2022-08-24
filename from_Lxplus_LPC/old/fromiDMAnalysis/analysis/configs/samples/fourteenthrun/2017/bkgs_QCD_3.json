@@ -1,0 +1,13 @@
+{
+    "QCD_HT500To700_2017": {
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2017/backgrounds_fourteenthrun/QCD_HT500to700_TuneCP5_13TeV-madgraph-pythia8/crab_iDMAnalysis_QCD_HT500To700_2017/200728_015602/0000/merged"
+        ],
+        "group": "QCD",
+        "limit_num_files": -1,
+        "mode": "BKG",
+        "sum_gen_wgt": 56450060.0,
+        "xsec": 29370,
+        "year": 2017
+    }
+}

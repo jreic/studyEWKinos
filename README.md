@@ -1,11 +1,7 @@
-# studyEWKinos
+For this project, we produced simulated samples of an Electroweak SUSY process and determined whether the CMS detector would be sensitive to the resulting signal. 
 
-Usage w/ our example files:
+In the sample production process takes input template cards, creates a gridpack with relevant Madgraph code, decays the events in Pythia, and streamlines the resulting data into nTuples using code from CMS's (inelastic dark matter) group.
 
-`python plot_gen.py inputFiles=/nfs/cms/mc1/jpr255/EWKino/hats_2020_gen/data/GEN4HATS/DYToLL_M-50_13TeV_pythia8_cff_py_GEN.root maxEvents=1000`
+We can also verify the generator and reconstruction-level kinematics of our samples to ensure that our simulations represent the desires physical processes.
 
-or
-
-`python plot_gen.py inputFiles=/nfs/cms/mc1/jpr255/EWKino/hats_2020_gen/data/GENHATS2020/RunIIAutumn18MiniAOD/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/MINIAODSIM/102X_upgrade2018_realistic_v15-v1/0038605E-C94B-574F-AF1F-000435E9A26E.root maxEvents=1000`
-
-We can also remove `maxEvents=1000` (or set it to `maxEvents=-1`) to process all events, or change the number to any other number of events (e.g. `maxEvents=10000`). For most simple checks, 1000 is probably sufficient though.
+Lastly, we apply reconstruction-level cuts and determine the dimuon mass distribution, largely using code developed by the IDM group.

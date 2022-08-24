@@ -1,0 +1,62 @@
+{
+    "EWKino_M-125_125_95_ctau-1": {
+        "ctau_cm": 0.1,
+        "delta_fraction": 0.1,
+        "dir": [
+            "/eos/uscms/store/user/amalbert/EWKinoSamples/WinoBino/125_125_95/125_125_95_1mm.root"
+	],
+        "group": "sig_EWKino_1mm",
+        "limit_num_files": -1,
+        "lumi": 59.74,
+        "m1": 100.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 29421.0,
+        "xsec": 0.0148990274419,
+        "year": 2018
+    },
+    "EWKino_M-125_125_95_ctau-10": {
+        "ctau_cm": 1,
+        "delta_fraction": 0.1,
+        "dir": [
+	    "/eos/uscms/store/user/amalbert/EWKinoSamples/WinoBino/125_125_95/125_125_95_10mm.root"
+        ],
+        "group": "sig_EWKino_10mm",
+        "limit_num_files": -1,
+        "lumi": 59.74,
+        "m1": 100.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 32685.0,
+        "xsec": 0.0165519428959,
+        "year": 2018
+    },
+    "EWKino_M-125_125_95_ctau-100": {
+        "ctau_cm": 10,
+        "delta_fraction": 0.1,
+        "dir": [
+	    "/eos/uscms/store/user/amalbert/EWKinoSamples/WinoBino/125_125_95/125_125_95_100mm.root"
+        ],
+        "group": "sig_EWKino_100mm",
+        "limit_num_files": -1,
+        "lumi": 59.74,
+        "m1": 100.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 32348.0,
+        "xsec": 0.0163812834265,
+        "year": 2018
+    },
+    "EWKino_M-125_125_95_ctau-1000": {
+        "ctau_cm": 100,
+        "delta_fraction": 0.1,
+        "dir": [
+	   "/eos/uscms/store/user/amalbert/EWKinoSamples/WinoBino/125_125_95/125_125_95_1000mm.root"
+        ],
+        "group": "sig_EWKino_1000mm",
+        "limit_num_files": -1,
+        "lumi": 59.74,
+        "m1": 100.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 31787.0,
+        "xsec": 0.0160971885828,
+        "year": 2018
+    }
+}
